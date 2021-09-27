@@ -12,6 +12,8 @@ Deploy/Configure OpenShift User-Workload Monitoring as described in the OpenShif
 
 ## Deploy Prometheus Pushgateway
 
+Note: Pushgateway container image source is from Prometheus repository on 'quay.io': [https://quay.io/repository/prometheus/pushgateway?tab=info](https://quay.io/repository/prometheus/pushgateway?tab=info)
+
 ### Deploy Pushgateway and create Service
 
 ```shell

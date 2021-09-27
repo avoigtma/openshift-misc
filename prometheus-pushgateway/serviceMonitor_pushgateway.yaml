@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: pushgateway-monitor
+  name: pushgateway-monitor
+spec:
+  endpoints:
+  - interval: 10s
+    port: pushgateway
+    scheme: http
+    honorLabels: true
+    honorTimestamps: true
+  selector:
+    matchLabels:
+      app: pushgateway

@@ -6,6 +6,8 @@ metadata:
   name: tools
   namespace: linux-container
 spec:
+  failedBuildsHistoryLimit: 2
+  successfulBuildsHistoryLimit: 2
   output:
     to:
       kind: ImageStreamTag

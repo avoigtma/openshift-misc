@@ -1,4 +1,5 @@
-FROM centos:centos8
+FROM quay.io/centos/centos:stream8
+# use officiel centos(-streams) container base image from https://quay.io/repository/centos/centos
 
 # change to ENV variable
 ARG OCRELEASE=4.8

@@ -32,13 +32,13 @@ spec:
             - -c
             - |
               #!/bin/bash
-              while (true); do echo "please use the container terminal ... "; date; sleep 60; done
+              while (true); do date +%F--%H-%M-%S; echo "please use the container terminal ... "; echo ""; sleep 60; done
           image: >-
-            image-registry.openshift-image-registry.svc:5000/linux-container/tools@sha256:6b907f84eceb9a6885370e787f8187d6ef14acd3e09bf0e58e746b7e371e9392
+            image-registry.openshift-image-registry.svc:5000/linux-container/tools:latest
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       securityContext: {}

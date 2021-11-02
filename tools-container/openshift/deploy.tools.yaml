@@ -1,0 +1,51 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+  name: tools
+  namespace: linux-container
+  labels:
+    app: tools
+    app.kubernetes.io/component: tools
+    app.kubernetes.io/instance: tools
+    app.kubernetes.io/name: tools
+    app.kubernetes.io/part-of: tools-app
+    app.openshift.io/runtime: tools
+    app.openshift.io/runtime-namespace: linux-container
+    app.openshift.io/runtime-version: latest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tools
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: tools
+        deploymentconfig: tools
+    spec:
+      containers:
+        - name: tools
+          command:
+            - /bin/bash
+            - -c
+            - |
+              #!/bin/bash
+              while (true); do echo "please use the container terminal ... "; date; sleep 60; done
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/linux-container/tools@sha256:6b907f84eceb9a6885370e787f8187d6ef14acd3e09bf0e58e746b7e371e9392
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10

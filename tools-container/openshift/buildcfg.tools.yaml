@@ -14,9 +14,9 @@ spec:
   resources: {}
   runPolicy: Serial
   source:
-    contextDir: docker
+    contextDir: tools-container/docker
     git:
-      uri: 'https://github.com/avoigtma/openshift-certmonger.git'
+      uri: 'https://github.com/avoigtma/openshift-misc.git'
   strategy:
     dockerStrategy:
       dockerfilePath: Dockerfile-tools.docker

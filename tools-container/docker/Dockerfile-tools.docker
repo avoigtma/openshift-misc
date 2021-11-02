@@ -1,14 +1,14 @@
 FROM centos:centos8
 
 # change to ENV variable
-ARG OCVERSION=4.8.15
+ARG OCRELEASE=4.8
 ARG USER=1001
 ARG APP_ROOT=/tools
 
 USER root
 
 # install some additional packages
-RUN INSTALL_PKGS="systemd wget net-tools iputils less jq git openssl"; \
+RUN INSTALL_PKGS="wget net-tools iputils less jq git openssl"; \
     yum install -q -y --setopt=tsflags=nodocs $INSTALL_PKGS; \
     rpm -V $INSTALL_PKGS; \
     yum -y -q update; \
@@ -19,7 +19,7 @@ RUN mkdir -p ${APP_ROOT}/bin \
 
 # copy required scripts to image and install 'oc' client
 COPY scripts/* ${APP_ROOT}/bin/
-RUN wget --no-verbose https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$OCVERSION/openshift-client-linux-$OCVERSION.tar.gz \
+RUN wget --no-verbose https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$OCRELEASE/openshift-client-linux.tar.gz \
     && tar -xf openshift-client-linux-$OCVERSION.tar.gz \
     && mv -v {oc,kubectl} ${APP_ROOT}/bin \
     && rm -f openshift-client-linux-$OCVERSION.tar.gz

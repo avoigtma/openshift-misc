@@ -1,0 +1,105 @@
+﻿kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: init-container-example
+  labels:
+    app: init-container-example
+    app.kubernetes.io/component: init-container-example
+    app.kubernetes.io/instance: init-container-example
+    app.kubernetes.io/name: init-container-example
+    app.kubernetes.io/part-of: init-container-example
+spec:
+  selector:
+    matchLabels:
+      app: init-container-example
+  template:
+    metadata:
+      labels:
+        app: init-container-example
+        deploymentconfig: init-container-example
+    spec:
+      volumes:
+        - name: sample
+          persistentVolumeClaim:
+            claimName: sample
+      initContainers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: init-directories
+          command:
+            - /bin/bash
+            - '-c'
+            - >
+              #!/bin/bash
+
+              echo "Init container started"
+
+              echo "Creating directory structure on mounted PVC with mount path
+              $BASEPATH (executing 'mkdir -p $BASEPATH/<mydirs>'):"
+
+              if [ -d $BASEPATH ]
+
+              then
+                for dir in $DIRLIST
+                do
+                  mkdir -p $BASEPATH/$dir
+                done
+                echo "Directories created."
+              else
+                echo "Error: Mount path $BASEPATH does not exist."
+              fi
+
+              echo "Init container completed"
+          env:
+            - name: BASEPATH
+              value: /data
+            - name: DIRLIST
+              value: a b/b1 b/b2 c/c1/c11/c111
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: sample
+              mountPath: /data
+          terminationMessagePolicy: File
+          image: registry.access.redhat.com/ubi8/ubi-minimal:8.5            
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: init-container-example
+          command:
+            - /bin/bash
+            - '-c'
+            - |
+              #!/bin/bash
+              while (true)
+              do
+                echo "Please use the Pod terminal"
+                date
+                echo ""
+                echo "Files on mounted PVC with mount path /data (executing 'ls -alR $BASEPATH'):"
+                ls -alR $BASEPATH
+                echo
+                echo "--------------"
+                echo
+                sleep 30
+              done
+          env:
+            - name: BASEPATH
+              value: /data
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: sample
+              mountPath: /data
+          terminationMessagePolicy: File
+          image: registry.access.redhat.com/ubi8/ubi-minimal:8.5            
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600

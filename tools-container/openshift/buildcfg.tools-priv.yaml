@@ -2,8 +2,8 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   labels:
-    build: tools
-  name: tools
+    build: tools-privileged
+  name: tools-privileged
   namespace: linux-container
 spec:
   failedBuildsHistoryLimit: 2
@@ -11,7 +11,7 @@ spec:
   output:
     to:
       kind: ImageStreamTag
-      name: 'tools:latest'
+      name: 'tools-privileged:latest'
   postCommit: {}
   resources: {}
   runPolicy: Serial
@@ -21,7 +21,7 @@ spec:
       uri: 'https://github.com/avoigtma/openshift-misc.git'
   strategy:
     dockerStrategy:
-      dockerfilePath: Dockerfile-tools.docker
+      dockerfilePath: Dockerfile-tools-privileged.docker
       from:
         kind: ImageStreamTag
         name: 'centosstream8:latest'

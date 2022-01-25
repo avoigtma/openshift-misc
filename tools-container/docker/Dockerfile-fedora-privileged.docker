@@ -34,7 +34,7 @@ RUN chmod 755 ${APP_ROOT}/bin/* \
 
 RUN useradd -u ${USER} -d ${APP_ROOT} ${USERNAME} \
     && echo "demo-user:start123" | chpasswd \
-    && usermod -aG sudo ${USERNAME} \
+    && usermod -aG wheel ${USERNAME} \
     && echo "" >>/etc/sudoers \
     && echo "${USERNAME} ALL = NOPASSWD: /usr/bin/bash, /bin/kill" >>/etc/sudoers
 

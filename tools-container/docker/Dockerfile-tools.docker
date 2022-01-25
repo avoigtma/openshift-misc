@@ -9,7 +9,7 @@ ARG APP_ROOT=/tools
 USER root
 
 # install some additional packages
-RUN INSTALL_PKGS="wget net-tools iputils less jq git openssl"; \
+RUN INSTALL_PKGS="wget net-tools iputils less jq git openssl vim-minimal-2 vim-enhanced-2"; \
     yum install -q -y --setopt=tsflags=nodocs $INSTALL_PKGS; \
     rpm -V $INSTALL_PKGS; \
     yum -y -q update; \

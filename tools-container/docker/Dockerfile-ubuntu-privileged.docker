@@ -9,7 +9,7 @@ ARG APP_ROOT=/tools
 USER root
 
 # install some additional packages
-RUN INSTALL_PKGS="wget net-tools iputils-tracepath iputils-ping less jq git openssl sudo base-passwd"; \
+RUN INSTALL_PKGS="wget net-tools iputils-tracepath iputils-ping less jq git vim openssl sudo base-passwd"; \
     apt-get update -q -y; \
     apt-get install -q -y $INSTALL_PKGS; \
     apt-get upgrade -q -y; \

@@ -1,0 +1,46 @@
+FROM ubuntu:latest
+
+# change to ENV variable
+ARG OCRELEASE=4.8
+ARG USER=1000
+ARG USERNAME=demo-user
+ARG APP_ROOT=/tools
+
+USER root
+
+# install some additional packages
+RUN INSTALL_PKGS="wget net-tools iputils iproute less jq git openssl vim-minimal vim-enhanced sudo passwd""; \
+    yum install -q -y --setopt=tsflags=nodocs $INSTALL_PKGS; \
+    rpm -V $INSTALL_PKGS; \
+    yum -y -q update; \
+    yum -q clean all; 
+
+RUN mkdir -p ${APP_ROOT}/bin \
+    && chmod g+w ${APP_ROOT}
+
+# copy required scripts to image and install 'oc' client
+COPY scripts/* ${APP_ROOT}/bin/
+#RUN wget --no-verbose https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$OCRELEASE/openshift-client-linux.tar.gz \
+#    && tar -xf openshift-client-linux.tar.gz \
+#    && mv -v {oc,kubectl} ${APP_ROOT}/bin \
+#    && rm -f openshift-client-linux.tar.gz
+
+ENV PATH=${APP_ROOT}/bin:${PATH} HOME=${APP_ROOT}
+
+RUN chmod 755 ${APP_ROOT}/bin/* \
+    && chgrp -R 0 ${APP_ROOT} \
+    && chmod -R g=u ${APP_ROOT} \
+    && chmod g=u /etc/passwd
+
+RUN useradd -u ${USER} -d ${APP_ROOT} ${USERNAME} \
+    && echo "demo-user:start123" | chpasswd \
+    && usermod -aG sudo ${USERNAME} \
+    && echo "" >>/etc/sudoers \
+    && echo "${USERNAME} ALL = NOPASSWD: /usr/bin/bash, /bin/kill" >>/etc/sudoers
+
+
+# switch to user
+USER $USER
+WORKDIR ${APP_ROOT}
+
+ENTRYPOINT [ "uid_entrypoint" ]

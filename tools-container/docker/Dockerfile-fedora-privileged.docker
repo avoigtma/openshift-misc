@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM quay.io/fedora/fedora:36
 
 # change to ENV variable
 ARG OCRELEASE=4.8

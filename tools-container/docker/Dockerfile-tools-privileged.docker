@@ -2,14 +2,14 @@ FROM quay.io/centos/centos:stream8
 # use officiel centos(-streams) container base image from https://quay.io/repository/centos/centos
 
 # change to ENV variable
-ARG OCRELEASE=4.8
+ARG OCRELEASE=4.11
 ARG USER=1000
 ARG APP_ROOT=/tools
 
 USER root
 
 # install some additional packages
-RUN INSTALL_PKGS="wget net-tools iputils iproute less jq git openssl vim-minimal vim-enhanced sudo passwd"; \
+RUN INSTALL_PKGS="wget net-tools iputils iproute mtr tcpdump less jq git openssl vim-minimal vim-enhanced sudo passwd"; \
     yum install -q -y --setopt=tsflags=nodocs $INSTALL_PKGS; \
     rpm -V $INSTALL_PKGS; \
     yum -y -q update; \
@@ -20,7 +20,7 @@ RUN mkdir -p ${APP_ROOT}/bin \
 
 # copy required scripts to image and install 'oc' client
 COPY scripts/* ${APP_ROOT}/bin/
-RUN wget --no-verbose https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$OCRELEASE/openshift-client-linux.tar.gz \
+RUN wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest-$OCRELEASE/openshift-client-linux.tar.gz \
     && tar -xf openshift-client-linux.tar.gz \
     && mv -v {oc,kubectl} ${APP_ROOT}/bin \
     && rm -f openshift-client-linux.tar.gz

@@ -39,6 +39,8 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           imagePullPolicy: Always
+          securityContext:
+            privileged: true
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       securityContext:

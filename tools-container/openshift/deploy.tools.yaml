@@ -41,7 +41,8 @@ spec:
           imagePullPolicy: Always
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
-      securityContext: {}
+      securityContext:
+        serviceAccountName: rootable-sa
       schedulerName: default-scheduler
   strategy:
     type: RollingUpdate

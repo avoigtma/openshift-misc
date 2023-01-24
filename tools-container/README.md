@@ -17,7 +17,7 @@ oc import-image fedora36 --from=quay.io/fedora/fedora:36 -n openshift --confirm 
 oc import-image ubuntu --from=ubuntu:latest -n openshift --confirm --scheduled=true
 
 oc apply -f openshift/namespace.tools.yaml
-oc apply -R -f openshift -n 
+oc apply -R -f openshift -n linux-container
 oc adm policy add-scc-to-user anyuid -z rootable-sa -n linux-container
 oc adm policy add-scc-to-user privileged -z privileged-sa -n linux-container
 ```

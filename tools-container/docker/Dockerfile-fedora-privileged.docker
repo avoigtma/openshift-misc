@@ -1,7 +1,7 @@
 FROM quay.io/fedora/fedora:36
 
 # change to ENV variable
-ARG OCRELEASE=4.11
+ARG OCRELEASE=4.12
 ARG USER=1000
 ARG USERNAME=demo-user
 ARG APP_ROOT=/tools
@@ -9,7 +9,7 @@ ARG APP_ROOT=/tools
 USER root
 
 # install some additional packages
-RUN INSTALL_PKGS="wget net-tools iputils iproute mtr tcpdump less jq git openssl vim-minimal vim-enhanced sudo passwd"; \
+RUN INSTALL_PKGS="wget net-tools iputils iproute mtr tcpdump omping less jq git openssl vim-minimal vim-enhanced sudo passwd"; \
     yum install -q -y --setopt=tsflags=nodocs $INSTALL_PKGS; \
     rpm -V $INSTALL_PKGS; \
     yum -y -q update; \

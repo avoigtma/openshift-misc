@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 # change to ENV variable
-ARG OCRELEASE=4.11
+ARG OCRELEASE=4.12
 ARG USER=1000
 ARG USERNAME=demo-user
 ARG APP_ROOT=/tools

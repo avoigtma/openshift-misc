@@ -1,0 +1,38 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: tools
+  name: tools
+  namespace: linux-container
+spec:
+  failedBuildsHistoryLimit: 2
+  successfulBuildsHistoryLimit: 2
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'tools:latest'
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    contextDir: tools-container/docker
+    git:
+      uri: 'https://github.com/avoigtma/openshift-misc.git'
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Dockerfile-tools.docker
+      from:
+        kind: ImageStreamTag
+        name: 'centosstream8:latest'
+        namespace: openshift
+      noCache: true
+    type: Docker
+  triggers:
+    - imageChange:
+        from:
+          kind: ImageStreamTag
+          name: 'centosstream8:latest'
+          namespace: openshift
+      type: ImageChange
+    - type: ConfigChange

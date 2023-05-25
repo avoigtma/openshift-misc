@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: scc-access 
+  namespace: iperf
+  labels:
+    app: iperf
+    app.kubernetes.io/component: iperf
+    app.kubernetes.io/instance: iperf
+    app.kubernetes.io/name: iperf
+    app.kubernetes.io/part-of: iperf-app
+    app.openshift.io/runtime: iperf
+    app.openshift.io/runtime-namespace: iperf
+    app.openshift.io/runtime-version: latest
+rules:
+- apiGroups:
+  - security.openshift.io 
+  resourceNames:
+  - privileged
+  resources:
+  - securitycontextconstraints 
+  verbs: 
+  - use

@@ -4,7 +4,7 @@ metadata:
   labels:
     build: tools
   name: tools
-  namespace: linux-container
+  namespace: iperf
 spec:
   failedBuildsHistoryLimit: 2
   successfulBuildsHistoryLimit: 2
@@ -16,7 +16,7 @@ spec:
   resources: {}
   runPolicy: Serial
   source:
-    contextDir: tools-container/docker
+    contextDir: iperf/docker
     git:
       uri: 'https://github.com/avoigtma/openshift-misc.git'
   strategy:

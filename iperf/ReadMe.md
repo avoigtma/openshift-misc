@@ -1,4 +1,11 @@
 
+# Install
+
+```shell
+oc import-image ubi8/ubi --from=registry.access.redhat.com/ubi8/ubi --confirm
+oc apply -f openshift/namespace.iperf.yaml
+oc apply -R -f openshift -n iperf
+```
 
 # References
 

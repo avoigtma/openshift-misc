@@ -1,0 +1,33 @@
+apiVersion: loki.grafana.com/v1
+kind: LokiStack
+metadata:
+  name: logging-loki
+  namespace: openshift-logging
+spec:
+  size: 1x.small
+  storage:
+    schemas:
+    - version: v12
+      effectiveDate: "2022-06-01"
+    secret:
+      name: logging-loki-s3
+      type: s3
+    tls:
+      caKey: service-ca.crt
+      caName: lokistack-minio-ca
+  storageClassName: managed-nfs-storage 
+  tenants:
+    mode: openshift-logging
+  limits:
+    global:
+      ingestion:
+        ingestionBurstSize: 16
+        ingestionRate: 8
+  rules:
+    enabled: true
+    namespaceSelector:
+      matchLabels:
+        openshift.io/cluster-monitoring: 'true'
+    selector:
+      matchLabels:
+        openshift.io/cluster-monitoring: 'true'

@@ -12,8 +12,8 @@ Plus a variant settling on Ubuntu (not complete, NOT preferred) for some testing
 
 
 ```shell
-oc import-image centosstream8 --from=quay.io/centos/centos:stream8 -n openshift --confirm --scheduled=true
-oc import-image fedora36 --from=quay.io/fedora/fedora:36 -n openshift --confirm --scheduled=true
+oc import-image centosstream9 --from=quay.io/centos/centos:stream9 -n openshift --confirm --scheduled=true
+oc import-image fedora41 --from=quay.io/fedora/fedora:41 -n openshift --confirm --scheduled=true
 oc import-image ubuntu --from=ubuntu:latest -n openshift --confirm --scheduled=true
 
 oc apply -f openshift/namespace.tools.yaml

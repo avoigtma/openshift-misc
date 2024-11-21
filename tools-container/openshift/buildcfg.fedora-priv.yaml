@@ -24,7 +24,7 @@ spec:
       dockerfilePath: Dockerfile-fedora-privileged.docker
       from:
         kind: ImageStreamTag
-        name: 'fedora36:latest'
+        name: 'fedora41:latest'
         namespace: openshift
       noCache: true
     type: Docker
@@ -32,7 +32,7 @@ spec:
     - imageChange:
         from:
           kind: ImageStreamTag
-          name: 'fedora36:latest'
+          name: 'fedora41:latest'
           namespace: openshift
       type: ImageChange
     - type: ConfigChange

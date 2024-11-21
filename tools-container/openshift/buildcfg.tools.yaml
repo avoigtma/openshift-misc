@@ -24,7 +24,7 @@ spec:
       dockerfilePath: Dockerfile-tools.docker
       from:
         kind: ImageStreamTag
-        name: 'centosstream8:latest'
+        name: 'centosstream9:latest'
         namespace: openshift
       noCache: true
     type: Docker
@@ -32,7 +32,7 @@ spec:
     - imageChange:
         from:
           kind: ImageStreamTag
-          name: 'centosstream8:latest'
+          name: 'centosstream9:latest'
           namespace: openshift
       type: ImageChange
     - type: ConfigChange

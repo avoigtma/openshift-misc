@@ -6,8 +6,20 @@ ARG PACKAGES="git jq iperf3 nmap nmap-ncat iputils"
  
 ## set the Artifactory repositories, install selected packages and update everything
 #### use RUN set -eux; dnf ... to get more output in case of errors
-RUN dnf --disablerepo="*" --enablerepo="ubi-9-baseos-rpms" --enablerepo="ubi-9-appstream-rpms" --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install -y ${PACKAGES} \
-    && dnf --enablerepo="ubi-9-baseos-rpms" --enablerepo="ubi-9-appstream-rpms" --setopt=install_weak_deps=0 --setopt=tsflags=nodocs upgrade -y \
+RUN dnf --disablerepo="*" \
+    --enablerepo="ubi-9-baseos-rpms" \
+    --enablerepo="ubi-9-appstream-rpms" \
+    --enablerepo="rhel-9-for-x86_64-baseos-rpms" \
+    --enablerepo="rhel-9-for-x86_64-appstream-rpms" \
+    --setopt=install_weak_deps=0 --setopt=tsflags=nodocs \
+    install -y ${PACKAGES} \
+    && dnf  \
+    --enablerepo="ubi-9-baseos-rpms" \
+    --enablerepo="ubi-9-appstream-rpms" \
+    --enablerepo="rhel-9-for-x86_64-baseos-rpms" \
+    --enablerepo="rhel-9-for-x86_64-appstream-rpms" \
+    --setopt=install_weak_deps=0 --setopt=tsflags=nodocs \
+    upgrade -y \
     && dnf clean all \
     && rpm -q ${PACKAGES}
 

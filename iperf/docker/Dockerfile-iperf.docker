@@ -1,5 +1,4 @@
 FROM registry.access.redhat.com/ubi9/ubi
-RUN dnf install -y iperf3
 
 ## modify the following argument to cover the packages to be installed, these are just examples
 #ARG PACKAGES="java-11-openjdk-devel tzdata-java git"

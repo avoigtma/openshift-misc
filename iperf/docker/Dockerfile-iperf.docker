@@ -1,4 +1,20 @@
-FROM registry.access.redhat.com/ubi8/ubi
-RUN yum install -y iperf3
+FROM registry.access.redhat.com/ubi9/ubi
+RUN dnf install -y iperf3
+
+## modify the following argument to cover the packages to be installed, these are just examples
+#ARG PACKAGES="java-11-openjdk-devel tzdata-java git"
+ARG PACKAGES="git jq iperf3 nmap nmap-ncat iputils"
+ 
+## set the Artifactory repositories, install selected packages and update everything
+#### use RUN set -eux; dnf ... to get more output in case of errors
+RUN dnf --disablerepo="*" --enablerepo="ubi-9-baseos-rpms" --enablerepo="ubi-9-appstream-rpms" --setopt=install_weak_deps=0 --setopt=tsflags=nodocs install -y ${PACKAGES} \
+    && dnf --enablerepo="ubi-9-baseos-rpms" --enablerepo="ubi-9-appstream-rpms" --setopt=install_weak_deps=0 --setopt=tsflags=nodocs upgrade -y \
+    && dnf clean all \
+    && rpm -q ${PACKAGES}
+
+# add 'oc'
+COPY --from=registry.redhat.io/openshift4/ose-cli-rhel9:v4.17 /usr/bin/oc /usr/bin/oc
+RUN for i in kubectl openshift-deploy openshift-docker-build openshift-sti-build openshift-git-clone openshift-manage-dockerfile openshift-extract-image-content openshift-recycle; do ln -sf /usr/bin/oc /usr/bin/$i; done
+
 ENTRYPOINT trap : TERM INT; sleep infinity & wait # Listen for kill signals and exit quickly.
 

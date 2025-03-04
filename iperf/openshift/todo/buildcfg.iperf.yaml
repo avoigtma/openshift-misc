@@ -24,15 +24,17 @@ spec:
       dockerfilePath: Dockerfile-iperf.docker
       from:
         kind: ImageStreamTag
-        name: 'ubi8-ubi:latest'
+        name: 'ubi9-ubi:latest'
         namespace: openshift
       noCache: true
+      volumes:
+      - name: etc-pki-entitlement
+        mounts:
+        - destinationPath: /etc/pki/entitlement
+        source:
+          type: Secret
+          secret:
+            secretName: etc-pki-entitlement
     type: Docker
   triggers:
-    - imageChange:
-        from:
-          kind: ImageStreamTag
-          name: 'centosstream8:latest'
-          namespace: openshift
-      type: ImageChange
     - type: ConfigChange

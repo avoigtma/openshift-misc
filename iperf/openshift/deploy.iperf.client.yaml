@@ -2,13 +2,13 @@ kind: Deployment
 apiVersion: apps/v1
 metadata:
   annotations:
-  name: iperf
+  name: iperf-client
   namespace: iperf
   labels:
     app: iperf
     app.kubernetes.io/component: iperf
-    app.kubernetes.io/instance: iperf
-    app.kubernetes.io/name: iperf
+    app.kubernetes.io/instance: iperf-client
+    app.kubernetes.io/name: iperf-client
     app.kubernetes.io/part-of: iperf-app
     app.openshift.io/runtime: iperf
     app.openshift.io/runtime-namespace: iperf
@@ -23,9 +23,9 @@ spec:
       creationTimestamp: null
       labels:
         app: iperf
-        deploymentconfig: iperf
+        deploymentconfig: iperf-client
     spec:
-      nodeName: compute-1
+      nodeName: compute-0
       containers:
         - name: iperf
           command:

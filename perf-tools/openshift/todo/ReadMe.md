@@ -1,6 +1,6 @@
 # TODO
 
-* Build the `iperf3` container image on OpenShift.
+* Build the `perftools` container image on OpenShift.
 
 
 Current issue: required repositories are not accessible when building on OCP. This might be an entitlement topic.

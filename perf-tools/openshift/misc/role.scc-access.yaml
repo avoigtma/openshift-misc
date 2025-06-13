@@ -1,0 +1,23 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: scc-access 
+  namespace: perftools
+  labels:
+    app: perftools
+    app.kubernetes.io/component: perftools
+    app.kubernetes.io/instance: perftools
+    app.kubernetes.io/name: perftools
+    app.kubernetes.io/part-of: perftools-app
+    app.openshift.io/runtime: perftools
+    app.openshift.io/runtime-namespace: perftools
+    app.openshift.io/runtime-version: latest
+rules:
+- apiGroups:
+  - security.openshift.io 
+  resourceNames:
+  - privileged
+  resources:
+  - securitycontextconstraints 
+  verbs: 
+  - use

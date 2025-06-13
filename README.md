@@ -2,7 +2,8 @@
 
 Miscellaneous OpenShift topics
 
-* iperf (not ready) 
+* perf-tools
+    * container covering some performance measurement tools such as 'iperf' and 'fio'
 * init-container
     * init container example
 * logging-loki-minio

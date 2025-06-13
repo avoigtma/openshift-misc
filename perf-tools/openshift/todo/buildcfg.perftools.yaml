@@ -2,26 +2,26 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   labels:
-    build: iperf
-  name: iperf
-  namespace: iperf
+    build: perftools
+  name: perftools
+  namespace: perftools
 spec:
   failedBuildsHistoryLimit: 2
   successfulBuildsHistoryLimit: 2
   output:
     to:
       kind: ImageStreamTag
-      name: 'iperf:latest'
+      name: 'perftools:latest'
   postCommit: {}
   resources: {}
   runPolicy: Serial
   source:
-    contextDir: iperf/docker
+    contextDir: perftools/docker
     git:
       uri: 'https://github.com/avoigtma/openshift-misc.git'
   strategy:
     dockerStrategy:
-      dockerfilePath: Dockerfile-iperf.docker
+      dockerfilePath: Dockerfile-perftools.docker
       from:
         kind: ImageStreamTag
         name: 'ubi9-ubi:latest'

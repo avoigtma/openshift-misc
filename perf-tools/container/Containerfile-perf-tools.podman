@@ -2,7 +2,7 @@ FROM registry.access.redhat.com/ubi9/ubi
 
 ## modify the following argument to cover the packages to be installed, these are just examples
 #ARG PACKAGES="java-11-openjdk-devel tzdata-java git"
-ARG PACKAGES="git jq iperf3 fio nmap nmap-ncat iputils wget"
+ARG PACKAGES="git jq iperf3 fio nmap nmap-ncat iputils wget libaio fio-engine-libaio"
  
 ## set the Artifactory repositories, install selected packages and update everything
 #### use RUN set -eux; dnf ... to get more output in case of errors

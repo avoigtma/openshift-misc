@@ -42,6 +42,9 @@ podman push quay.io/avoigtma/perftools:latest
 
 ## Install on OpenShift
 
+
+* two PVCs will be created using default storageclass - adjust the PVC yaml files in case a specific storageclass needs to be used
+
 ```shell
 oc apply -f openshift/namespace.perftools.yaml
 oc apply -R -f openshift -n perftools
@@ -72,11 +75,11 @@ Instead of running on a Pod, the 'server'-side of `iperf3` can be run on any oth
 
 ## Run `fio` Tests
 
-> TBD
-
-* Mount a persistent volume to the Deployment/Pod
-* run `fio`
-
+* the 'perftools' Deployment has a PVC attached (default on `/fiotest`)
+* run `fio` using suitable parameters against that volume
+* a script is included in `/scripts` which runs a number of tests using different parameters (*sick* are these suitable)
+* a Job runs the script automatically and and copies the output to a ConfigMap
+  * gather the result data from the ConfigMap and delete the ConfigMap afterwards in order not to flood 'etcd' with unneeded data
 
 
 # References

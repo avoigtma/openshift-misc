@@ -8,7 +8,7 @@ else
 fi
 
 [[ -n ${FIOBASEDIR} && ! -w ${FIOBASEDIR} ]] && echo "Please set environment variable 'FIOBASEDIR' to a writable target directory" && exit 1;
-[[ -n ${FIOOUTDIR} ]] && echo "Please set environment variable 'FIOOUTDIR' to value of output sub-directory (will be created in '$FIOBASEDIR')" && exit 1;
+[[ -z ${FIOOUTDIR} ]] && echo "Please set environment variable 'FIOOUTDIR' to value of output sub-directory (will be created in '$FIOBASEDIR')" && exit 1;
 
 
 # Test file size

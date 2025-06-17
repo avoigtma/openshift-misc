@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[[ -n ${FIOBASEDIR} && ! -w ${FIOBASEDIR} ]] && echo "Please set environment variable 'FIOBASEDIR' to a writable target directory" && exit 1;
+
 # Test file size
 SIZE=16Gb
 # NumThreads
@@ -11,7 +13,9 @@ RUNTIME=60
 
 # Path to test file
 FILEPATH=$FIOBASEDIR/testfile_$SIZE
-OUTPATH=$FIOBASEDIR
+OUTPATH=$FIOBASEDIR/outputs/$(date "+%Y-%m-%d_%H-%M")
+
+mkdir -p $OUTPATH
 
 # Sequential read/write
 IODEPTHVALS="8 32"
@@ -22,8 +26,8 @@ do
   for iodepth in $IODEPTHVALS
   do
     # Sequential writes/reads with 1Mb block size
-    fio --name=fiotest-seqwrite-$BS-iodepth-$iodepth  --output=$OUTPATH/fiotest-seqwrite-$BS-iodepth-$iodepth --filename=$FILEPATH --size=$SIZE --rw=write --bs=$bs --direct=1 --numjobs=$NUMTHREADS --ioengine=libaio --iodepth=$iodepth --group_reporting --runtime=$RUNTIME --startdelay=$STARTDELAY
-    fio --name=fiotest-seqread-$BS-iodepth-$iodepth  --output=$OUTPATH/fiotest-seqread-$BS-iodepth-$iodepth --filename=$FILEPATH --size=$SIZE --rw=read --bs=$bs --direct=1 --numjobs=$NUMTHREADS --ioengine=libaio --iodepth=$iodepth --group_reporting --runtime=$RUNTIME --startdelay=$STARTDELAY
+    fio --name=fiotest-seqwrite-$BS-iodepth-$iodepth  --output=$OUTPATH/fiotest-seqwrite-$BS-iodepth-$iodepth.txt --filename=$FILEPATH --size=$SIZE --rw=write --bs=$bs --direct=1 --numjobs=$NUMTHREADS --ioengine=libaio --iodepth=$iodepth --group_reporting --runtime=$RUNTIME --startdelay=$STARTDELAY
+    fio --name=fiotest-seqread-$BS-iodepth-$iodepth  --output=$OUTPATH/fiotest-seqread-$BS-iodepth-$iodepth.txt --filename=$FILEPATH --size=$SIZE --rw=read --bs=$bs --direct=1 --numjobs=$NUMTHREADS --ioengine=libaio --iodepth=$iodepth --group_reporting --runtime=$RUNTIME --startdelay=$STARTDELAY
   done
 done
 
@@ -36,7 +40,10 @@ do
   for iodepth in $IODEPTHVALS
   do
     # Random writes/reads with $bs block size
-    fio --name=fiotest-randwrite-$bs-iodepth-$iodepth --output=$OUTPATH/fiotest-randwrite-$bs-iodepth-$iodepth --filename=$FILEPATH --size=16Gb --rw=randwrite --bs=$BS --direct=1 --numjobs=$NUMTHREADS --ioengine=libaio --iodepth=$iodepth --group_reporting --runtime=$RUNTIME --startdelay=$STARTDELAY
-    fio --name=fiotest-randread-$bs-iodepth-$iodepth --output=$OUTPATH/fiotest-randread-$bs-iodepth-$iodepth --filename=$FILEPATH --size=16Gb --rw=randread --bs=$BS --direct=1 --numjobs=$NUMTHREADS --ioengine=libaio --iodepth=$iodepth --group_reporting --runtime=$RUNTIME --startdelay=$STARTDELAY
+    fio --name=fiotest-randwrite-$bs-iodepth-$iodepth --output=$OUTPATH/fiotest-randwrite-$bs-iodepth-$iodepth.txt --filename=$FILEPATH --size=16Gb --rw=randwrite --bs=$bs --direct=1 --numjobs=$NUMTHREADS --ioengine=libaio --iodepth=$iodepth --group_reporting --runtime=$RUNTIME --startdelay=$STARTDELAY
+    fio --name=fiotest-randread-$bs-iodepth-$iodepth --output=$OUTPATH/fiotest-randread-$bs-iodepth-$iodepth.txt --filename=$FILEPATH --size=16Gb --rw=randread --bs=$bs --direct=1 --numjobs=$NUMTHREADS --ioengine=libaio --iodepth=$iodepth --group_reporting --runtime=$RUNTIME --startdelay=$STARTDELAY
   done
 done
+
+# delete the testfile
+rm $FILEPATH

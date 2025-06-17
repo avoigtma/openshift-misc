@@ -27,5 +27,10 @@ RUN dnf --disablerepo="*" \
 COPY --from=registry.redhat.io/openshift4/ose-cli-rhel9:v4.18 /usr/bin/oc /usr/bin/oc
 RUN for i in kubectl openshift-deploy openshift-docker-build openshift-sti-build openshift-git-clone openshift-manage-dockerfile openshift-extract-image-content openshift-recycle; do ln -sf /usr/bin/oc /usr/bin/$i; done
 
+# add sample 'fio' scripts
+RUN mkdir scripts
+COPY scripts/fiotests.sh scripts/fiotests.sh
+RUN chmod 755 scripts/fiotests.sh
+
 ENTRYPOINT trap : TERM INT; sleep infinity & wait # Listen for kill signals and exit quickly.
 

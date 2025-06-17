@@ -95,5 +95,10 @@ https://access.redhat.com/solutions/7020142
 
 ## `fio`
 
-FIO wrapper scripts included in the container image are adopted from https://github.com/nikosbatsaras/FIO-scripts
+FIO ReadTheDocs
+https://fio.readthedocs.io/en/latest/index.html
+
+FIO Github
+https://github.com/axboe/fio
+
 

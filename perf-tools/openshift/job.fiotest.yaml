@@ -1,8 +1,8 @@
-kind: Deployment
-apiVersion: apps/v1
+kind: Job
+apiVersion: batch/v1
 metadata:
   annotations:
-  name: perftools
+  name: fiotest
   namespace: perftools
   labels:
     app: perftools
@@ -14,10 +14,8 @@ metadata:
     app.openshift.io/runtime-namespace: perftools
     app.openshift.io/runtime-version: latest
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: perftools
+  backoffLimit: 1
+  completions: 1
   template:
     metadata:
       creationTimestamp: null
@@ -25,11 +23,10 @@ spec:
         app: perftools
         deploymentconfig: perftools
     spec:
-      nodeName: compute-1
       volumes:
         - name: fiotest
           persistentVolumeClaim:
-            claimName: fiotest
+            claimName: fiotest-job
       containers:
         - name: perftools
           command:
@@ -37,7 +34,10 @@ spec:
             - -c
             - |
               #!/bin/bash
-              while (true); do date +%F--%H-%M-%S; echo "please use the container terminal ... "; echo ""; sleep 60; done
+              echo "Running FIO test script and creating ConfigMap with results"
+              TIMESTAMP=$(date "+%Y-%m-%d--%H-%M")
+              /scripts/fiotests.sh $TIMESTAMP
+              oc create cm -n perftools fio-results-$TIMESTAMP --from-file=$FIOBASEDIR/$FIOOUTDIR/$TIMESTAMP
           env:
             - name: FIOBASEDIR
               value: /fiotest
@@ -52,13 +52,5 @@ spec:
           volumeMounts:
             - name: fiotest
               mountPath: /fiotest
-      restartPolicy: Always
-      terminationGracePeriodSeconds: 30
+      restartPolicy: Never
       serviceAccountName: perftools-sa
-      schedulerName: default-scheduler
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 25%
-      maxSurge: 25%
-  revisionHistoryLimit: 10

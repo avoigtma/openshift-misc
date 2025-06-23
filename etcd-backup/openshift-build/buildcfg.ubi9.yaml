@@ -24,7 +24,7 @@ spec:
       dockerfilePath: Containerfile-ubi9sshclient.podman
       from:
         kind: ImageStreamTag
-        name: 'ubi9-ubi:latest'
+        name: 'ubi9:latest'
         namespace: openshift
       noCache: true
       volumes:

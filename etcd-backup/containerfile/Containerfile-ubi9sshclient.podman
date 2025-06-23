@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/ubi
+FROM registry.redhat.io/ubi9
 
 ## modify the following argument to cover the packages to be installed, these are just examples
 ARG PACKAGES="openssh-clients"

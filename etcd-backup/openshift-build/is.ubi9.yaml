@@ -1,0 +1,15 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: ubi9sshclient
+  namespace: etcd-backup
+  labels:
+    app: ubi9sshclient
+    app.kubernetes.io/component: ubi9sshclient
+    app.kubernetes.io/instance: ubi9sshclient
+    app.kubernetes.io/name: ubi9sshclient
+    app.kubernetes.io/part-of: ubi9sshclient-app
+    app.openshift.io/runtime: ubi9sshclient
+    app.openshift.io/runtime-namespace: ubi9sshclient
+    app.openshift.io/runtime-version: latest
+spec: {}

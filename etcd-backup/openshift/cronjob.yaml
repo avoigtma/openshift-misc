@@ -1,0 +1,79 @@
+kind: CronJob
+apiVersion: batch/v1
+metadata:
+  name: cronjob-etcd-backup
+  namespace: etcd-backup
+  labels:
+    app.kubernetes.io/name: cronjob-etcd-backup
+spec:
+  schedule: "0 0-23/6 * * *"
+  concurrencyPolicy: Forbid
+  suspend: false
+  jobTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cronjob-etcd-backup
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: cronjob-etcd-backup
+        spec:
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: ''
+          restartPolicy: Never
+          activeDeadlineSeconds: 500
+          serviceAccountName: cronjob-etcd-backup
+          hostPID: true
+          hostNetwork: true
+          enableServiceLinks: true
+          schedulerName: default-scheduler
+          terminationGracePeriodSeconds: 30
+          securityContext: {}
+          containers:
+            - name: cronjob-etcd-backup
+              image: registry.redhat.io/openshift4/ose-cli
+              terminationMessagePath: /dev/termination-log
+              command:
+              - /bin/bash
+              - '-c'
+              - |
+                #/bin/bash
+                ## create local backup
+                echo -e '\n\n---\nCreate etcd backup local to master\n'
+                TS=$(date "+%F_%H%M%S")
+                chroot /host /usr/local/bin/cluster-backup.sh /home/core/backup/$TS
+                ## create tar of backup directory and remove backup dir
+                chroot /host tar -zcf /home/core/backup/$TS.tgz /home/core/backup/$TS
+                chroot /host rm -fr /home/core/backup/$TS
+                ## copy backup to backup sink
+                echo -e '\n\n---\nCopy backup to backup target\n'
+                # cp or scp/sftp
+                echo "TODO: replace this line with copy command ..... cp ........."
+                ## cleanup old backups
+                echo -e '\n\n---\nCleanup old local etcd backups\n'
+                echo -e '\nRemoving ...'
+                chroot /host find /home/core/backup/ -type f -mmin +"2"
+                chroot /host find /home/core/backup/ -type f -mmin +"2" -delete 
+              securityContext:
+                privileged: true
+                runAsUser: 0
+                capabilities:
+                  add:
+                    - SYS_CHROOT
+              imagePullPolicy: Always
+              volumeMounts:
+                - name: host
+                  mountPath: /host
+              terminationMessagePolicy: File
+          volumes:
+          - name: host
+            hostPath:
+              path: /
+              type: Directory
+          dnsPolicy: ClusterFirst
+          tolerations:
+          - key: node-role.kubernetes.io/control-plane
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5

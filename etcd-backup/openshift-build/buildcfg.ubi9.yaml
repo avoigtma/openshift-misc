@@ -1,0 +1,40 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: ubi9sshclient
+  name: ubi9sshclient
+  namespace: etcd-backup
+spec:
+  failedBuildsHistoryLimit: 2
+  successfulBuildsHistoryLimit: 2
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'ubi9sshclient:latest'
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    contextDir: etcd-backup/containerfile
+    git:
+      uri: 'https://github.com/avoigtma/openshift-misc.git'
+  strategy:
+    dockerStrategy:
+      dockerfilePath: Containerfile-ubi9sshclient.podman
+      from:
+        kind: ImageStreamTag
+        name: 'ubi9-ubi:latest'
+        namespace: openshift
+      noCache: true
+      volumes:
+      - name: etc-pki-entitlement
+        mounts:
+        - destinationPath: /etc/pki/entitlement
+        source:
+          type: Secret
+          secret:
+            secretName: etc-pki-entitlement
+    type: Docker
+  triggers:
+    - type: ConfigChange

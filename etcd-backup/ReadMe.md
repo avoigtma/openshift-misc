@@ -1,18 +1,21 @@
 # Etcd Backup
 
+Use a CronJob to perform the backup of 'etcd'.
 
-## Create the Container Image
+See OpenShift documentation for details: https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/backup_and_restore/control-plane-backup-and-restore#backup-etcd
 
-### Prerequisites
 
-* a RHEL 9 machine / VM running Podman
-* Red Hat account to pull UBI9 image
-* (optional) an account at `quay.io` or any other registry to store the build image
-    * we use `quay.io` as example
+Main etcd backup is performed by a script supplied on the Control Plane nodes of OpenShift.
 
+The CronJob wraps that script and adds capabilities to export the created data to an external target.
+
+* scp/sftp location (in our example)
+* NFS PVC (provided by an external NFS share) - adjust the volument mounts of the CronJob and script
+* S3 Object Bucket - - adjust the volument mounts of the CronJob and script; add s3 client to the container image
 
 ### Build the Image
 
+See `openshift-build` directory.
 
 ## Install on OpenShift
 
@@ -22,8 +25,7 @@ oc apply -R -f openshift -n etcd-backup
 ```
 
 
-
 # References
 
-OpenShift Documentation 
-
+OpenShift Documentation - Control plane backup and restore - Backing up etcd
+https://docs.redhat.com/en/documentation/openshift_container_platform/4.18/html/backup_and_restore/control-plane-backup-and-restore#backup-etcd

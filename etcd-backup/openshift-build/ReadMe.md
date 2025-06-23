@@ -21,7 +21,7 @@ As the entitlement keys may be too large for `oc apply` to act, the following ca
 
 
 ```shell
-oc import-image ubi9:9.6 --from=registry.redhat.io/ubi9 --confirm
+oc import-image ubi9 -n openshift --from=registry.redhat.io/ubi9 --confirm
 oc get secret etc-pki-entitlement -n openshift-config-managed -o 'go-template={{index .data "entitlement-key.pem"}}' >entitlement-key.pem
 oc get secret etc-pki-entitlement -n openshift-config-managed -o 'go-template={{index .data "entitlement.pem"}}' >entitlement.pem
 oc -n etcd-backup create secret generic etc-pki-entitlement --from-file=entitlement-key.pem=./entitlement-key.pem --from-file=entitlement.pem=./entitlement.pem
@@ -32,7 +32,12 @@ oc -n etcd-backup apply -f openshift-build/buildcfg.ubi9.yaml -n etcd-backup
 
 # Manually build the image using Podman
 
+Build the target image locally on a RHEL 9 machine using 'podman'.
+
 ```shell
 podman build -t ubi9sshclient -f container/Containerfile-ubi9.podman
 ```
+
+Push the image to OpenShift's image registry or an external image registry for use with the CronJob.
+
 

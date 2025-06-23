@@ -4,6 +4,8 @@ metadata:
   name: backup-target
   namespace: etcd-backup
 data:
+  backup-target-hostname: my.dummy.backup.host.example.com
+  backup-target-user: my-backup-user
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -11,4 +13,5 @@ metadata:
   name: clustername
   namespace: etcd-backup
 data:
+  clustername: mylab
 

@@ -33,7 +33,9 @@ spec:
           securityContext: {}
           containers:
             - name: cronjob-etcd-backup
-              image: registry.redhat.io/openshift4/ose-cli
+              # image: registry.redhat.io/openshift4/ose-cli
+              # image: registry.redhat.io/ubi9
+              image: image-registry.openshift-image-registry.svc:5000/etcd-backup/ubi9sshclient:latest
               terminationMessagePath: /dev/termination-log
               command:
               - /bin/bash
@@ -50,12 +52,24 @@ spec:
                 ## copy backup to backup sink
                 echo -e '\n\n---\nCopy backup to backup target\n'
                 # cp or scp/sftp
-                echo "TODO: replace this line with copy command ..... cp ........."
+                echo "TODO: replace this line with copy command ....."
+                KEYFILE=/info/backup-credentials/ssh-key
+                BACKUP_TARGET_HOST=$(cat /info/backup-target/backup-target-hostname)
+                BACKUP_TARGET_USER=$(cat /info/backup-target/backup-target-user)
+                # create backup dir for cluster
+                echo ssh -i $KEYFILE $BACKUP_TARGET_USER@$BACKUP_TARGET_HOST mkdir ~/etcd-backup/$CLUSTERNAME
+                echo scp -i $KEYFILE /home/core/backup/$TS.tgz $BACKUP_TARGET_USER@$BACKUP_TARGET_HOST:~/etcd-backup/$CLUSTERNAME/.
                 ## cleanup old backups
                 echo -e '\n\n---\nCleanup old local etcd backups\n'
                 echo -e '\nRemoving ...'
                 chroot /host find /home/core/backup/ -type f -mmin +"2"
                 chroot /host find /home/core/backup/ -type f -mmin +"2" -delete 
+              env:
+                - name: CLUSTERNAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: clustername
+                      key: clustername
               securityContext:
                 privileged: true
                 runAsUser: 0
@@ -66,12 +80,25 @@ spec:
               volumeMounts:
                 - name: host
                   mountPath: /host
+                - name: backuptarget
+                  mountPath: /info/backup-target
+                - name: target-secret
+                  mountPath: /info/backup-credentials
+                  readOnly: true
               terminationMessagePolicy: File
           volumes:
           - name: host
             hostPath:
               path: /
               type: Directory
+          - name: backuptarget
+            configMap:
+              name: backup-target
+          - name: target-secret
+            secret:
+              secretName: target-credentials
+              key: ssh-key
+              defaultMode: 0400
           dnsPolicy: ClusterFirst
           tolerations:
           - key: node-role.kubernetes.io/control-plane

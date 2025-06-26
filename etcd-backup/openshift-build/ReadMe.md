@@ -29,6 +29,7 @@ oc -n etcd-backup apply -f openshift-build/is.ubi9.yaml -n etcd-backup
 oc -n etcd-backup apply -f openshift-build/buildcfg.ubi9.yaml -n etcd-backup
 ```
 
+Hint: In case the image build fails due to installation errors while updating (`dnf upgrade`) of RPMs, this might due to the fact that RPM updates try to apply new entitlements in `/etc/pki/entitlements` which is mounted from a Secret. In such case, re-import the 'ubi9' image, to gather an updated image.
 
 # Manually build the image using Podman
 

@@ -25,7 +25,7 @@ oc import-image ubi9 -n openshift --from=registry.redhat.io/ubi9 --scheduled=tru
 oc get secret etc-pki-entitlement -n openshift-config-managed -o 'go-template={{index .data "entitlement-key.pem"}}' >entitlement-key.pem
 oc get secret etc-pki-entitlement -n openshift-config-managed -o 'go-template={{index .data "entitlement.pem"}}' >entitlement.pem
 oc -n etcd-backup create secret generic etc-pki-entitlement --from-file=entitlement-key.pem=./entitlement-key.pem --from-file=entitlement.pem=./entitlement.pem
-oc -n etcd-backup apply -f openshift-build/is.ubi9.yaml -n etcd-backup
+oc -n etcd-backup apply -f openshift-build/imagestream.ubi9.yaml -n etcd-backup
 oc -n etcd-backup apply -f openshift-build/buildcfg.ubi9.yaml -n etcd-backup
 ```
 

@@ -42,6 +42,10 @@ spec:
               - '-c'
               - |
                 #/bin/bash
+                ## unset proxy variables (in case set in base image); prevent using proxy if accessing etcd
+                unset HTTP_PROXY
+                unset HTTPS_PROXY
+                unset NO_PROXY
                 ## create local backup
                 echo -e '\n\n---\nCreate etcd backup local to master\n'
                 TS=$(date "+%F_%H%M%S")
@@ -49,16 +53,22 @@ spec:
                 ## create tar of backup directory and remove backup dir
                 chroot /host tar -zcf /home/core/backup/$TS.tgz /home/core/backup/$TS
                 chroot /host rm -fr /home/core/backup/$TS
+                echo "Backup file is: /home/core/backup/$TS.tgz"
+                echo "All backup files on node:"
+                chroot /host ls -l /home/core/backup
                 ## copy backup to backup sink
                 echo -e '\n\n---\nCopy backup to backup target\n'
                 # cp or scp/sftp
-                echo "TODO: replace this line with copy command ....."
-                KEYFILE=/info/backup-credentials/ssh-key
+                KEYFILE=/info/backup-credentials/sshkey
                 BACKUP_TARGET_HOST=$(cat /info/backup-target/backup-target-hostname)
                 BACKUP_TARGET_USER=$(cat /info/backup-target/backup-target-user)
                 # create backup dir for cluster
-                echo ssh -i $KEYFILE $BACKUP_TARGET_USER@$BACKUP_TARGET_HOST mkdir ~/etcd-backup/$CLUSTERNAME
-                echo scp -i $KEYFILE /home/core/backup/$TS.tgz $BACKUP_TARGET_USER@$BACKUP_TARGET_HOST:~/etcd-backup/$CLUSTERNAME/.
+                echo "Creating backup target directory"
+                echo "ssh -i $KEYFILE -o StrictHostKeyChecking=accept-new $BACKUP_TARGET_USER@$BACKUP_TARGET_HOST mkdir -p /home/$BACKUP_TARGET_USER/etcd-backup/$CLUSTERNAME"
+                ssh -i $KEYFILE -o StrictHostKeyChecking=accept-new $BACKUP_TARGET_USER@$BACKUP_TARGET_HOST "mkdir -p /home/$BACKUP_TARGET_USER/etcd-backup/$CLUSTERNAME"
+                echo "Copying Backup Tar archive"
+                echo "scp -i $KEYFILE -o StrictHostKeyChecking=accept-new /host/home/core/backup/$TS.tgz $BACKUP_TARGET_USER@$BACKUP_TARGET_HOST:/home/$BACKUP_TARGET_USER/etcd-backup/$CLUSTERNAME/."
+                scp -i $KEYFILE -o StrictHostKeyChecking=accept-new /host/home/core/backup/$TS.tgz $BACKUP_TARGET_USER@$BACKUP_TARGET_HOST:/home/$BACKUP_TARGET_USER/etcd-backup/$CLUSTERNAME/.
                 ## cleanup old backups
                 echo -e '\n\n---\nCleanup old local etcd backups\n'
                 echo -e '\nRemoving ...'

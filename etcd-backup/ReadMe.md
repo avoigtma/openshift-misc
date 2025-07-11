@@ -13,9 +13,22 @@ The CronJob wraps that script and adds capabilities to export the created data t
 * NFS PVC (provided by an external NFS share) - adjust the volument mounts of the CronJob and script
 * S3 Object Bucket - - adjust the volument mounts of the CronJob and script; add s3 client to the container image
 
-### Build the Image
+## Build the Image
 
 See `openshift-build` directory.
+
+
+## Pre-Deployment Configuration
+
+* adjust cluster name in ConfigMap (File `cm_cluster-name`)
+* adjust (backup target) hostname and user (on backup target host) in ConfigMap (File `cm_backup-target`)
+* configure ssh private key for ssh/scp/sftp access in secret (File `secret.yaml`)
+
+
+## Hints
+
+Use external Secrets management, e.g. External Secrets Operator to manage the Secret contents.
+
 
 ## Install on OpenShift
 

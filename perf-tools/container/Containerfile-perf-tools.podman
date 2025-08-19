@@ -1,7 +1,9 @@
 FROM registry.access.redhat.com/ubi9/ubi
 
+## 'warp' version to be installed
+ARG WARPVERSION="v1.3.0"
+
 ## modify the following argument to cover the packages to be installed, these are just examples
-#ARG PACKAGES="java-11-openjdk-devel tzdata-java git"
 ARG PACKAGES="git jq iperf3 fio nmap nmap-ncat iputils wget libaio fio-engine-libaio"
  
 ## set the Artifactory repositories, install selected packages and update everything
@@ -31,6 +33,12 @@ RUN for i in kubectl openshift-deploy openshift-docker-build openshift-sti-build
 RUN mkdir scripts
 COPY scripts/fiotests.sh scripts/fiotests.sh
 RUN chmod 755 scripts/fiotests.sh
+
+# add 'warp' S3 perftest tool
+
+RUN wget https://github.com/minio/warp/releases/download/${WARPVERSION}/warp_Linux_x86_64.rpm \
+    && rpm --install warp_Linux_x86_64.rpm
+
 
 ENTRYPOINT trap : TERM INT; sleep infinity & wait # Listen for kill signals and exit quickly.
 

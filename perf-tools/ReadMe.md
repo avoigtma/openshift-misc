@@ -84,7 +84,7 @@ Instead of running on a Pod, the 'server'-side of `iperf3` can be run on any oth
 
 # References
 
-## `iperf3`
+## `iperf3` - Network Performance Tests
 
 Testing Network Bandwidth in OpenShift using perftools Container.
 https://access.redhat.com/articles/5233541
@@ -96,7 +96,7 @@ Using perftools in Openshift Container Platform to check Network performance
 https://access.redhat.com/solutions/7020142
 
 
-## `fio`
+## `fio` - Disk Performance Tests
 
 FIO ReadTheDocs
 https://fio.readthedocs.io/en/latest/index.html
@@ -105,3 +105,49 @@ FIO Github
 https://github.com/axboe/fio
 
 
+## S3 Performance Tests
+
+The creators/vendor of Mino provides a tool called 'warp' for measuring S3 access performance.
+
+Links to 'warp' tool and several blogs on usage:
+
+Warp Github
+https://github.com/minio/warp
+
+Benchmarking AIStor with WARP and Perf test
+https://blog.min.io/how-to-benchmark-minio-warp-speedtest/
+
+Introducing Performance Test for MinIO
+https://blog.min.io/introducing-speedtest-for-minio/
+
+Benchmarking MinIO with WARP and Speedtest
+https://hackernoon.com/benchmarking-minio-with-warp-and-speedtest
+
+
+
+
+# Examples: Running Performance-Tests for S3
+
+```shell
+S3URL="https://$(oc get route -n minio minio-s3 --template='{{ .spec.host }}')"
+S3SRV=$(oc get route -n minio minio-s3 --template='{{ .spec.host }}')
+
+mc alias set warptest $S3URL $(jq -r .accessKey credentials.json) $(jq -r  .secretKey credentials.json)
+mc admin info warptest
+
+mc mb warptest/warptest
+mc ls warptest/warptest
+
+#warp mixed --host=$S3SRV --access-key=$(jq -r .accessKey credentials.json) --secret-key=$(jq -r  .secretKey credentials.json) --autoterm --bucket=warptest/warptest
+
+# Mixed benchmark - read and write
+warp mixed --host=$S3SRV --access-key=$(jq -r .accessKey credentials.json) --secret-key=$(jq -r  .secretKey credentials.json) --autoterm --tls
+
+# List benchmark
+warp list --host=$S3SRV --access-key=$(jq -r .accessKey credentials.json) --secret-key=$(jq -r  .secretKey credentials.json) --autoterm --tls
+
+# Get benchmark
+warp get --host=$S3SRV --access-key=$(jq -r .accessKey credentials.json) --secret-key=$(jq -r  .secretKey credentials.json) --autoterm --tls --range
+
+
+````

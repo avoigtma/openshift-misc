@@ -6,7 +6,8 @@ ARG WARPVERSION="v1.3.0"
 ## modify the following argument to cover the packages to be installed, these are just examples
 ARG PACKAGES="git jq iperf3 fio nmap nmap-ncat iputils wget libaio fio-engine-libaio"
  
-## set the Artifactory repositories, install selected packages and update everything
+## set the repositories, install selected packages and update everything
+### see https://access.redhat.com/articles/4238681 ("Universal Base Images (UBI): Images, repositories, packages, and source code")
 #### use RUN set -eux; dnf ... to get more output in case of errors
 RUN dnf --disablerepo="*" \
     --enablerepo="ubi-9-baseos-rpms" \
@@ -26,7 +27,7 @@ RUN dnf --disablerepo="*" \
     && rpm -q ${PACKAGES}
 
 # add 'oc'
-COPY --from=registry.redhat.io/openshift4/ose-cli-rhel9:v4.18 /usr/bin/oc /usr/bin/oc
+COPY --from=registry.redhat.io/openshift4/ose-cli-rhel9:v4.20 /usr/bin/oc /usr/bin/oc
 RUN for i in kubectl openshift-deploy openshift-docker-build openshift-sti-build openshift-git-clone openshift-manage-dockerfile openshift-extract-image-content openshift-recycle; do ln -sf /usr/bin/oc /usr/bin/$i; done
 
 # add sample 'fio' scripts

@@ -14,7 +14,7 @@ See my example repository on `quay.io`: `quay.io/avoigtma/perftools`. Please not
 
 ### Prerequisites
 
-* a RHEL 9 machine / VM running Podman
+* a RHEL 9 machine / VM running Podman (due to repository dependencies, a subscribed RHEL 9 podman host is required for the build)
 * Red Hat account to pull UBI9 image
 * (optional) an account at `quay.io` or any other registry to store the build image
     * we use `quay.io` as example
@@ -42,35 +42,88 @@ podman push quay.io/avoigtma/perftools:latest
 
 ## Install on OpenShift
 
+```shell
+PERFTOOLSNS=perftools
+oc apply -f openshift/namespace.perftools.yaml
+oc apply -R -f openshift/base -n $PERFTOOLSNS 
+
+```
+
+### IPerf3
+
+```shell
+PERFTOOLSNS=perftools
+oc apply -R -f openshift/iperf -n $PERFTOOLSNS 
+```
+
+### FIO
 
 * two PVCs will be created using default storageclass - adjust the PVC yaml files in case a specific storageclass needs to be used
 
 ```shell
-oc apply -f openshift/namespace.perftools.yaml
-oc apply -R -f openshift -n perftools
+PERFTOOLSNS=perftools
+oc apply -R -f openshift/fio -n $PERFTOOLSNS 
 ```
 
 ## Run `iperf3` Tests
 
-Modify the `Deployment` resources for both client and server part of the 'perftools' Deployment to bind the Pods to the target nodes. Adjust the `Deployment.spec.template.spec.nodeName` value to the target node name.
+The deployment rolls-out 
 
-Go to the terminal (WebUI or `oc rsh`) of the server Pod and run `perftools3`, e.g.:
+* a 'iperf' server Pod (using the Deployment `perftools`
+* 'perftools-client' Pods (using the DaemonSet `perftools-client`) on each node of the cluster
+
+
+Use the Pod Terminal in the OpenShift WebConsole or `oc rsh` into the running server Pod.
+
+```shell
+oc -n $PERFTOOLSNS rsh $(oc -n $PERFTOOLSNS get pods -l app=perftools -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | head -1)
+```
+
+Start the server
 
 ```shell
 iperf3 -s -p 5201 --forceflush
 ```
 
-Determine the IP address of the server pod, e.g. `10.131.0.19`.
-
-Go to the terminal (WebUI or `oc rsh`) of the client Pod and run `iperf3`, e.g.:
+Or in once
 
 ```shell
-iperf3 -c <iperf3-server-ip>  -t 15 -w 64k -P 1 -p 5201
+oc -n $PERFTOOLSNS rsh $(oc -n $PERFTOOLSNS get pods -l app=perftools -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | head -1) iperf3 -s -p 5201 --forceflush
 ```
 
-Adjust `iperf3` parameters as required.
 
-Instead of running on a Pod, the 'server'-side of `iperf3` can be run on any other target system (VM, etc.) outside of OpenShift which can be reached by the client-side Pod.
+
+Go to the terminal (WebUI or oc rsh) of one of the client Pods (select on a suitable node)
+
+```shell
+oc -n $PERFTOOLSNS get pods -l app=perftools-client -o wide
+oc -n $PERFTOOLSNS rsh <mypodname>
+```
+
+
+and run iperf3, e.g.:
+
+```shell
+# iperf3 -c <iperf3-server-ip>  -t 20 -w 64k -P 1 -p <port>
+
+# using OVN
+iperf3 -c iperf-server.perftools.svc.cluster.local  -t 20 -w 64k -P 1 -p 5201
+
+# using NodePort (check the service for the NodePort); best to use the worker on which the server port is running
+iperf3 -c worker-XX.stage.maximo.vwgroup.com  -t 20 -w 64k -P 1 -p 30853
+
+```
+
+Adjust iperf3 parameters as required.
+
+Instead of running on a Pod, the 'server'-side of iperf3 can be run on any other target system (VM, etc.) outside of OpenShift which can be reached by the client-side Pod.
+
+Vice-versa, an external 'iperf-client' can connect to the server pod using the NodePort service.
+
+Hints:
+
+* Access via NodePort provides increased speed as through OVN only
+* increase buffer size (`-w`) and/or concurrency (`-P`) if needed
 
 
 ## Run `fio` Tests

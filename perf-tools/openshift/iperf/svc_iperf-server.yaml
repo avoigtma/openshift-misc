@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: perftools
+    app.kubernetes.io/component: perftools
+    app.kubernetes.io/instance: perftools
+    app.kubernetes.io/name: perftools
+    app.kubernetes.io/part-of: perftools-app
+    app.openshift.io/runtime: perftools
+    app.openshift.io/runtime-namespace: perftools
+    app.openshift.io/runtime-version: latest
+  name: iperf-server
+  namespace: perftools
+spec:
+  externalTrafficPolicy: Cluster
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - nodePort: 30853
+    port: 5201
+    protocol: TCP
+    targetPort: 5201
+  selector:
+    deploymentconfig: perftools
+  sessionAffinity: None
+  type: NodePort

@@ -1,0 +1,33 @@
+apiVersion: observability.openshift.io/v1
+kind: ClusterLogForwarder
+metadata:
+  name: central-log-collector
+  namespace: openshift-logging
+spec:
+  managementState: Managed
+  outputs:
+    - name: rsyslog-demo
+      syslog:
+        appName: openshift-demo-cluster
+        enrichment: KubernetesMinimal
+        facility: lab
+        procId: '12345'
+        rfc: RFC3164
+        severity: informational
+        tuning:
+          deliveryMode: AtMostOnce
+        url: 'tcp://rsyslog.rsyslog.svc.cluster.local:514'
+      type: syslog
+  pipelines:
+    - inputRefs:
+        - application
+      name: application
+      outputRefs:
+        - rsyslog-demo
+    - inputRefs:
+        - infrastructure
+      name: infrastructure
+      outputRefs:
+        - rsyslog-demo
+  serviceAccount:
+    name: central-log-collector

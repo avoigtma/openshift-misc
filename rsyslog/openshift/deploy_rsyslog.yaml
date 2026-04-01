@@ -1,0 +1,52 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  annotations:
+  name: rsyslog
+  labels:
+    app: rsyslog
+    app.kubernetes.io/component: rsyslog
+    app.kubernetes.io/instance: rsyslog
+    app.kubernetes.io/name: rsyslog
+    app.kubernetes.io/part-of: rsyslog-app
+    app.openshift.io/runtime: rsyslog
+    app.openshift.io/runtime-namespace: rsyslog
+    app.openshift.io/runtime-version: latest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rsyslog
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: rsyslog
+        deploymentconfig: rsyslog
+    spec:
+      containers:
+        - name: rsyslog
+          image: registry.redhat.io/rhel9/rsyslog:latest
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+          volumeMounts:
+          - name: config-volume
+            mountPath: /etc/rsyslog.conf
+            subPath: rsyslog.conf
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      schedulerName: default-scheduler
+      serviceAccountName: rsyslog
+      volumes:
+      - name: config-volume
+        configMap:
+          name: rsyslog-conf
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+

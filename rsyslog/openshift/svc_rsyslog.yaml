@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: rsyslog
+  labels:
+    name: rsyslog
+spec:
+  ports:
+  - name: rsyslog
+    port: 514
+  selector:
+    app: rsyslog
+  sessionAffinity: None
+  type: ClusterIP

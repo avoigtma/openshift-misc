@@ -2,7 +2,7 @@
 # Rsyslog Container on OpenShift
 
 * Example for 'rsyslog' target from OpenShift Logging
-* This is based upon the Red Hat 'rsyslog' container. See <https://catalog.redhat.com/en/software/containers/rhel9/rsyslog>
+* This is based upon the Red Hat UBI9 'rsyslog' container. See <https://catalog.redhat.com/en/search?q=rsyslog&searchType=Containers&build_categories_list=Standalone+image&partnerName=Red+Hat>
 
 ## Configuration
 
@@ -35,7 +35,7 @@ Steps:
 * Deploy OpenShift Logging Operator
 * Create a `LogForwarder` instance (see example); ensure there is a `ServiceAccount` for the `LogForwarder` which has suitable permissions
 
-Example: 
+Example:
 
 ```shell
 oc apply -n openshift-logging -f logforwarder/sa-rolebindings_logforwarder.yaml

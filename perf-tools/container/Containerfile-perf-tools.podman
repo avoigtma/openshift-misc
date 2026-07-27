@@ -4,7 +4,8 @@ FROM registry.access.redhat.com/ubi9/ubi
 ARG WARPVERSION="v1.3.0"
 
 ## modify the following argument to cover the packages to be installed, these are just examples
-ARG PACKAGES="git jq iperf3 https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm qperf fio nmap nmap-ncat iputils wget libaio fio-engine-libaio"
+ARG EPEL="https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm"
+ARG PACKAGES="git jq iperf3 qperf fio nmap nmap-ncat iputils wget libaio fio-engine-libaio"
 
 ## set the repositories, install selected packages and update everything
 ### see https://access.redhat.com/articles/4238681 ("Universal Base Images (UBI): Images, repositories, packages, and source code")
@@ -16,6 +17,15 @@ RUN dnf --disablerepo="*" \
     --enablerepo="rhel-9-for-x86_64-appstream-rpms" \
     --enablerepo="codeready-builder-for-rhel-9-x86_64-rpms" \
     --setopt=install_weak_deps=0 --setopt=tsflags=nodocs \
+    install -y ${EPEL} \
+    && dnf --disablerepo="*" \
+    --enablerepo="ubi-9-baseos-rpms" \
+    --enablerepo="ubi-9-appstream-rpms" \
+    --enablerepo="rhel-9-for-x86_64-baseos-rpms" \
+    --enablerepo="rhel-9-for-x86_64-appstream-rpms" \
+    --enablerepo="codeready-builder-for-rhel-9-x86_64-rpms" \
+    --enablerepo="epel" \
+    --setopt=install_weak_deps=0 --setopt=tsflags=nodocs \
     install -y ${PACKAGES} \
     && dnf  \
     --enablerepo="ubi-9-baseos-rpms" \
@@ -23,6 +33,7 @@ RUN dnf --disablerepo="*" \
     --enablerepo="rhel-9-for-x86_64-baseos-rpms" \
     --enablerepo="rhel-9-for-x86_64-appstream-rpms" \
     --enablerepo="codeready-builder-for-rhel-9-x86_64-rpms" \
+    --enablerepo="epel" \
     --setopt=install_weak_deps=0 --setopt=tsflags=nodocs \
     upgrade -y \
     && dnf clean all \

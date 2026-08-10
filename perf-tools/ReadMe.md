@@ -128,6 +128,9 @@ Hints:
 
 ## Run `qperf` Tests
 
+
+### Run in the Pod network
+
 Run the server:
 
 ```shell
@@ -146,6 +149,28 @@ oc -n $PERFTOOLSNS rsh <mypodname> qperf -t 2 -vv --timeout 1 -oo msg_size:1:64K
 # run (example)
 
 ```
+
+### Run on the nodes
+
+In a debug terminal of a nodes (`oc debug node/mynode`) run the container for the `qperf` server:
+
+```
+chroot /host /bin/bash
+podman run --network=host --entrypoint="" -it quay.io/avoigtma/perftools:latest /bin/bash
+
+# run 'qperf' in the container terminal
+```
+
+Within another node run the `qperf` client
+
+```
+chroot /host /bin/bash
+podman run --entrypoint="" -it quay.io/avoigtma/perftools:latest /bin/bash
+
+# run 'qperf' with client parameters
+# e.g. 'qperf qperf -t 2 -vv --timeout 1 -oo msg_size:1:64K:*2 <my-qperf-server-node-ip> tcp_lat udp_lat'
+```
+
 
 
 

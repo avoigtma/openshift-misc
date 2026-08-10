@@ -110,7 +110,7 @@ and run iperf3, e.g.:
 iperf3 -c iperf-server.perftools.svc.cluster.local  -t 20 -w 64k -P 1 -p 5201
 
 # using NodePort (check the service for the NodePort); best to use the worker on which the server port is running
-iperf3 -c worker-XX.stage.maximo.vwgroup.com  -t 20 -w 64k -P 1 -p 30853
+iperf3 -c worker-XX.example.com  -t 20 -w 64k -P 1 -p 30853
 
 ```
 
@@ -124,6 +124,29 @@ Hints:
 
 * Access via NodePort provides increased speed as through OVN only
 * increase buffer size (`-w`) and/or concurrency (`-P`) if needed
+
+
+## Run `qperf` Tests
+
+Run the server:
+
+```shell
+oc -n $PERFTOOLSNS rsh $(oc -n $PERFTOOLSNS get pods -l app=perftools -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | head -1) qperf
+```
+
+
+```
+QPERFSERVER=$(oc -n $PERFTOOLSNS get pods -l app=perftools -o jsonpath='{range .items[*]}{.status.podIP}{"\n"}' | head -1)
+
+echo $QPERFSERVER
+
+oc -n $PERFTOOLSNS get pods -l app=perftools-client -o wide
+oc -n $PERFTOOLSNS rsh <mypodname> qperf -t 2 -vv --timeout 1 -oo msg_size:1:64K:*2 $QPERFSERVER tcp_lat udp_lat
+
+# run (example)
+
+```
+
 
 
 ## Run `fio` Tests

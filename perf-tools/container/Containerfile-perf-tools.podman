@@ -54,5 +54,5 @@ RUN wget https://github.com/minio/warp/releases/download/${WARPVERSION}/warp_Lin
     && rpm --install warp_Linux_x86_64.rpm
 
 
-ENTRYPOINT trap : TERM INT; sleep infinity & wait # Listen for kill signals and exit quickly.
-
+# Listen for kill signals and exit quickly.
+ENTRYPOINT ["/bin/sh", "-c", "trap : TERM INT; sleep infinity & wait"]

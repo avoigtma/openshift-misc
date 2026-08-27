@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: git-server-config
+data:
+  REPO_URL: "https://github.com/example/target-repo.git"
+  BRANCH_NAME: "main"

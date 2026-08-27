@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-ssh-server
+  labels:
+    app: git-ssh-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: git-ssh-server
+  template:
+    metadata:
+      labels:
+        app: git-ssh-server
+    spec:
+      serviceAccountName: git-server
+      containers:
+      - name: git-server
+        image: image-registry.openshift-image-registry.svc:5000/your-namespace/git-ssh-server:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 2222
+          name: ssh
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: git-ssh-service
+  labels:
+    app: git-ssh-server
+spec:
+  type: ClusterIP
+  selector:
+    app: git-ssh-server
+  ports:
+  - port: 22
+    targetPort: 2222
+    name: ssh

@@ -1,0 +1,40 @@
+FROM registry.access.redhat.com/ubi9/ubi:latest
+
+# Install Git and OpenSSH
+RUN dnf install -y git openssh-server && \
+    dnf clean all
+
+# Build arguments for target repo and branch
+ARG REPO_URL
+ARG BRANCH_NAME=main
+
+# Create dedicated git user restricted to git-shell
+RUN useradd -m -s /usr/bin/git-shell git && \
+    mkdir -p /home/git/.ssh && \
+    chmod 700 /home/git/.ssh
+
+# Clone only the specified branch as a bare repository into the image
+RUN git clone --bare --single-branch --branch ${BRANCH_NAME} ${REPO_URL} /srv/git/repo.git
+
+# Enforce read-only permissions on the repository filesystem
+RUN chmod -R 555 /srv/git/repo.git && \
+    chown -R git:git /srv/git
+
+# Copy user SSH public key into container context
+COPY id_rsa.pub /tmp/id_rsa.pub
+
+# Restrict SSH key strictly to read-only git operations (git-upload-pack)
+RUN KEY=$(cat /tmp/id_rsa.pub) && \
+    echo "command=\"git-upload-pack '/srv/git/repo.git'\",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty $KEY" > /home/git/.ssh/authorized_keys && \
+    chmod 600 /home/git/.ssh/authorized_keys && \
+    chown -R git:git /home/git/.ssh && \
+    rm /tmp/id_rsa.pub
+
+# Configure SSH server to listen on non-privileged port 2222
+RUN ssh-keygen -A && \
+    sed -i 's/#Port 22/Port 2222/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+
+EXPOSE 2222
+
+CMD ["/usr/sbin/sshd", "-D", "-e"]

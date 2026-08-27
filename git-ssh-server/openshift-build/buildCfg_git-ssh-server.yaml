@@ -1,0 +1,33 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: git-ssh-server-build
+  labels:
+    app: git-ssh-server
+spec:
+  runPolicy: Serial
+  source:
+    type: Git
+    git:
+      uri: https://github.com/avoigtma/openshift-misc.git
+      contextDir: git-ssh-server/containerfile
+      ref: main
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Containerfile
+      buildArgs:
+      - name: REPO_URL
+        valueFrom:
+          configMapKeyRef:
+            name: git-server-config
+            key: REPO_URL
+      - name: BRANCH_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: git-server-config
+            key: BRANCH_NAME
+  output:
+    to:
+      kind: ImageStreamTag
+      name: git-ssh-server:latest

@@ -29,18 +29,3 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "250m"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: git-ssh-service
-  labels:
-    app: git-ssh-server
-spec:
-  type: ClusterIP
-  selector:
-    app: git-ssh-server
-  ports:
-  - port: 22
-    targetPort: 2222
-    name: ssh

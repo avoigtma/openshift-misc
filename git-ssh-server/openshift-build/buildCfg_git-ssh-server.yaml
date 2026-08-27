@@ -5,13 +5,15 @@ metadata:
   labels:
     app: git-ssh-server
 spec:
+  failedBuildsHistoryLimit: 2
+  successfulBuildsHistoryLimit: 2
   runPolicy: Serial
   source:
     type: Git
     git:
       uri: https://github.com/avoigtma/openshift-misc.git
-      contextDir: git-ssh-server/containerfile
       ref: main
+    contextDir: git-ssh-server/containerfile
   strategy:
     type: Docker
     dockerStrategy:

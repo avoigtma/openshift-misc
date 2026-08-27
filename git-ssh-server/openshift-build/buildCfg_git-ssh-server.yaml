@@ -14,11 +14,7 @@ spec:
       uri: https://github.com/avoigtma/openshift-misc.git
       ref: main
     contextDir: git-ssh-server/containerfile
-  strategy:
-    type: Docker
-    dockerStrategy:
-      dockerfilePath: Containerfile
-      buildArgs:
+    env:
       - name: REPO_URL
         valueFrom:
           configMapKeyRef:
@@ -29,6 +25,10 @@ spec:
           configMapKeyRef:
             name: git-server-config
             key: BRANCH_NAME
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Containerfile
   output:
     to:
       kind: ImageStreamTag

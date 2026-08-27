@@ -5,8 +5,9 @@ RUN dnf install -y git openssh-server && \
     dnf clean all
 
 # Build arguments for target repo and branch
-ARG REPO_URL="https://github.com/avoigtma/openshift-misc.git"
-ARG BRANCH_NAME=main
+ARG REPO_URL
+ARG BRANCH_NAME
+ARG PUBLIC_KEY
 
 # Create dedicated git user restricted to git-shell
 RUN useradd -m -s /usr/bin/git-shell git && \
@@ -22,11 +23,9 @@ RUN git clone --bare --single-branch --branch ${BRANCH_NAME} ${REPO_URL} /srv/gi
 RUN chmod -R 555 /srv/git/repo.git && \
     chown -R git:git /srv/git
 
-# Copy user SSH public key into container context
-COPY id_rsa.pub /tmp/id_rsa.pub
 
 # Restrict SSH key strictly to read-only git operations (git-upload-pack)
-RUN KEY=$(cat /tmp/id_rsa.pub) && \
+RUN KEY=$(echo ${PUBLIC_KEY}) && \
     echo "command=\"git-upload-pack '/srv/git/repo.git'\",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty $KEY" > /home/git/.ssh/authorized_keys && \
     chmod 600 /home/git/.ssh/authorized_keys && \
     chown -R git:git /home/git/.ssh && \

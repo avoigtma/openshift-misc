@@ -5,3 +5,4 @@ metadata:
 data:
   REPO_URL: "https://github.com/example/target-repo.git"
   BRANCH_NAME: "main"
+  PUBLIC_KEY: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3...

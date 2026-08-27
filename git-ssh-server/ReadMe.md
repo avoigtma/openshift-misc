@@ -17,3 +17,5 @@ oc new-project $NAMESPACE
 oc apply -n $NAMESPACE -f openshift-build
 ```
 
+oc -n $NAMESPACE set data configmap/git-source-server-config --from-file=PUBLIC_KEY=~/.ssh/github_rsa.old.pub
+

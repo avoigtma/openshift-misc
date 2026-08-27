@@ -9,6 +9,8 @@ ARG REPO_URL
 ARG BRANCH_NAME
 ARG PUBLIC_KEY
 
+RUN env
+
 # Create dedicated git user restricted to git-shell
 RUN useradd -m -s /usr/bin/git-shell git && \
     mkdir -p /home/git/.ssh && \

@@ -5,7 +5,7 @@ RUN dnf install -y git openssh-server && \
     dnf clean all
 
 # Build arguments for target repo and branch
-ARG REPO_URL
+ARG REPO_URL=https://github.com/avoigtma/openshift-misc.git
 ARG BRANCH_NAME=main
 
 # Create dedicated git user restricted to git-shell
